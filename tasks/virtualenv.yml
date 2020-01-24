@@ -5,6 +5,7 @@
     owner: "{{ elastalert_user }}"
     group: "{{ elastalert_group }}"
     state: directory
+  become: true
 
 - name: Establish venv and ensure pip is at least version
   pip:
@@ -12,7 +13,7 @@
     state: latest
     virtualenv: "{{ elastalert_venv_rootdir }}/venv"
     virtualenv_python: "{{ elastalert_venv_python }}"
-  become: yes
+  become: true
   become_user: "{{ elastalert_user }}"
   with_items:
     - pip
@@ -25,7 +26,7 @@
     virtualenv: "{{ elastalert_venv_rootdir }}/venv"
     virtualenv_python: "{{ elastalert_venv_python }}"
   become_user: "{{ elastalert_user }}"
-  become: yes
+  become: true
 
 - name: Install compatible elasticsearch pip library
   pip:
@@ -34,4 +35,4 @@
     virtualenv: "{{ elastalert_venv_rootdir }}/venv"
     virtualenv_python: "{{ elastalert_venv_python }}"
   become_user: "{{ elastalert_user }}"
-  become: yes
+  become: true

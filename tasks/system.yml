@@ -1,18 +1,20 @@
 ---
 - name: Ensure pre-reqs installed
   package:
-    name: "{{ item }}"
-  with_items: "{{ elastalert_pkgs }}"
+    name: "{{ elastalert_pkgs }}"
+  become: true
 
 - name: Establish system group
   group:
     name: "{{ elastalert_group }}"
+  become: true
 
 - name: Establish system user
   user:
     name: "{{ elastalert_user }}"
     group: "{{ elastalert_group }}"
     shell: /bin/false
+  become: true
 
 - name: Ensure etc directory in place
   file:
@@ -21,3 +23,4 @@
     owner: root
     group: "{{ elastalert_group }}"
     mode: "0750"
+  become: true

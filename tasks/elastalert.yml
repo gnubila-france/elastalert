@@ -5,6 +5,7 @@
     dest: /lib/systemd/system/elastalert.service
     owner: root
     group: root
+  become: true
   notify: reload systemd
   tags: systemd
 
@@ -15,6 +16,7 @@
     owner: root
     group: "{{ elastalert_group }}"
     mode: "0640"
+  become: true
   tags: systemd
   notify: restart elastalert
 
@@ -26,6 +28,7 @@
   register: elastalert_index_result
   changed_when: false
   ignore_errors: yes
+  become: true
 
 - name: Create index
   shell: >
@@ -37,14 +40,15 @@
   args:
     chdir: "{{ elastalert_venv_rootdir }}"
     executable: /bin/bash
-  when: elastalert_index_result|failed
+  when: elastalert_index_result is failed
   become_user: "{{ elastalert_user }}"
-  become: yes
+  become: true
 
 - name: Read File system stats of the rules directory
   stat:
     path: "{{ elastalert_etc_root }}/{{ elastalert_rules_dir }}"
   register: rules_dir_stats
+  become: true
 
 - name: Fail installation when rules directory exists as a file
   fail:
@@ -58,6 +62,7 @@
     group: "{{ elastalert_group }}"
     mode: "0750"
     state: directory
+  become: true
 
 - name: Copy over alert files
   copy:
@@ -69,6 +74,7 @@
     validate: "{{ elastalert_venv_rootdir }}/venv/bin/elastalert-test-rule --config {{ elastalert_etc_root }}/config.yaml %s"
   with_fileglob: "{{ elastalert_rules_files }}"
   notify: restart elastalert
+  become: true
 
 - name: Deploy rules from templates
   template:
@@ -80,8 +86,10 @@
     validate: "{{ elastalert_venv_rootdir }}/venv/bin/elastalert-test-rule --config {{ elastalert_etc_root }}/config.yaml %s"
   with_fileglob: "{{ elastalert_rules_templates }}"
   notify: restart elastalert
+  become: true
 
 - name: Enable elastalert service
   service:
     name: elastalert
     enabled: yes
+  become: true
