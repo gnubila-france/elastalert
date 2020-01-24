@@ -41,7 +41,7 @@ Example Playbook
 
     - hosts: servers
       roles:
-         - role: freedomofpress.elastalert
+         - role: elastalert
 
 License
 -------
